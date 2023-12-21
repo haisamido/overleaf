@@ -4,27 +4,15 @@
 
 export SHELL :=/bin/bash
 export UNAME :=$(shell uname)
-export OS     =Linux
-
-ifeq ($(UNAME), Darwin)
-export OS=Darwin
-endif
-
-export DIFF_PROGRAM:=vimdiff
+export OS     =$(UNAME)
 
 # Containerization Parameters
 export CONTAINER_BIN          :=docker
 export CONTAINER_COMPOSE      :=docker-compose
 export DEFAULT_IMAGE_REGISTRY :=docker.io/library/
 
-export ENVIRO =test
-
-ifeq ($(ENVIRO),test)
-#$(info INFO: ENVIRO is set to ${ENVIRO})
-endif
-
 overleaf_start: overleaf_stop ## start overleaf
-	$(CONTAINER_COMPOSE)  up -d && \
+	$(CONTAINER_COMPOSE) up -d && \
 	$(MAKE) overleaf_create_admin_account
 
 overleaf_stop: ## stop overlearf
@@ -46,7 +34,7 @@ print-%: ## print a variable and its value, e.g. print the value of variable PRO
 define print-help
 $(call print-target-header,"Makefile Help")
 	echo
-	printf "%s\n" "Illustrates how to use IaC tools by example. It will be different in operations"
+	printf "%s\n" "Makefile targets and their purpose"
 	echo
 $(call print-target-header,"target                         description")
 	grep -E '^([a-zA-Z_-]).+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS=":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' | grep $(or $1,".*")
@@ -58,6 +46,3 @@ help:
 
 help-%: ## Filtered help, e.g.: make help-terraform
 	@$(call print-help,$*)
-
-print-%:
-	@echo $*=$($*)
